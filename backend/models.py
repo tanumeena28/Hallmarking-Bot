@@ -21,6 +21,7 @@ class User(Base):
     designation = Column(String)
     age = Column(Integer)
     company_type = Column(String(50))
+    is_certified = Column(String(50), nullable=True)
     gender = Column(String(20))
     phone = Column(String(20), nullable=True)
     role = Column(String, nullable=False)  # jeweler, hallmarking_centre, refinery, nch_admin
