@@ -20,6 +20,7 @@ export default function RegisterScreen({ navigation }: any) {
   const [age, setAge] = useState('');
   const [gender, setGender] = useState('Male');
   const [role, setRole] = useState('jeweler');
+  const [isCertified, setIsCertified] = useState('yes');
   const [loading, setLoading] = useState(false);
 
   const apiUrl = Constants.expoConfig?.extra?.apiUrl;
@@ -46,6 +47,7 @@ export default function RegisterScreen({ navigation }: any) {
           age: parseInt(age),
           gender,
           role,
+          is_certified: isCertified,
         }),
       });
 
@@ -138,12 +140,76 @@ export default function RegisterScreen({ navigation }: any) {
           <TouchableOpacity
             key={r.value}
             style={[styles.roleCard, role === r.value && styles.activeRoleCard]}
-            onPress={() => setRole(r.value)}
+            onPress={() => {
+              setRole(r.value);
+              setIsCertified('yes'); // Reset to yes when role changes
+            }}
           >
             <Text style={[styles.roleText, role === r.value && styles.activeRoleText]}>{r.label}</Text>
           </TouchableOpacity>
         ))}
       </View>
+
+      {/* Conditional Onboarding Questions */}
+      {role === 'jeweler' && (
+        <View style={styles.certifiedContainer}>
+          <Text style={styles.label}>Are you a BIS Certified Jeweler?</Text>
+          <View style={styles.row}>
+            {[
+              { label: 'Yes', value: 'yes' },
+              { label: 'No', value: 'no' }
+            ].map((opt) => (
+              <TouchableOpacity
+                key={opt.value}
+                style={[styles.chip, isCertified === opt.value && styles.activeChip]}
+                onPress={() => setIsCertified(opt.value)}
+              >
+                <Text style={[styles.chipText, isCertified === opt.value && styles.activeChipText]}>{opt.label}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+      )}
+
+      {role === 'hallmarking_centre' && (
+        <View style={styles.certifiedContainer}>
+          <Text style={styles.label}>Is your AHC Recognized by BIS?</Text>
+          <View style={styles.row}>
+            {[
+              { label: 'Yes', value: 'yes' },
+              { label: 'No', value: 'no' }
+            ].map((opt) => (
+              <TouchableOpacity
+                key={opt.value}
+                style={[styles.chip, isCertified === opt.value && styles.activeChip]}
+                onPress={() => setIsCertified(opt.value)}
+              >
+                <Text style={[styles.chipText, isCertified === opt.value && styles.activeChipText]}>{opt.label}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+      )}
+
+      {role === 'refinery' && (
+        <View style={styles.certifiedContainer}>
+          <Text style={styles.label}>Is your Refinery NABL Accredited or BIS Licensed?</Text>
+          <View style={styles.row}>
+            {[
+              { label: 'Yes', value: 'yes' },
+              { label: 'No', value: 'no' }
+            ].map((opt) => (
+              <TouchableOpacity
+                key={opt.value}
+                style={[styles.chip, isCertified === opt.value && styles.activeChip]}
+                onPress={() => setIsCertified(opt.value)}
+              >
+                <Text style={[styles.chipText, isCertified === opt.value && styles.activeChipText]}>{opt.label}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+      )}
 
       <TouchableOpacity style={styles.button} onPress={handleRegister} disabled={loading}>
         {loading ? (
@@ -208,6 +274,9 @@ const styles = StyleSheet.create({
   activeChipText: {
     color: '#fff',
     fontWeight: 'bold',
+  },
+  certifiedContainer: {
+    marginBottom: 15,
   },
   roleContainer: {
     marginBottom: 20,

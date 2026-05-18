@@ -83,6 +83,7 @@ class RegisterRequest(BaseModel):
     age: int
     gender: str
     role: UserRole
+    is_certified: str | None = None
 
 # --- Endpoints ---
 
@@ -112,7 +113,9 @@ def register_user(request: RegisterRequest, db: Session = Depends(get_db)):
         designation=request.designation,
         age=request.age,
         gender=request.gender,
-        role=request.role.value
+        role=request.role.value,
+        company_type=request.role.value,
+        is_certified=request.is_certified
     )
     db.add(user)
     db.commit()

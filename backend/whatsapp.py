@@ -118,86 +118,20 @@ async def whatsapp_webhook(request: Request, db: Session = Depends(get_db)):
             user.company_type = "jeweler"
             user.role = "jeweler"
             db.commit()
-            reply = (
-                "Dhanyawad! Aapne 'Jeweler' select kiya hai.\n\n"
-                "Kya aap ek **BIS Certified Jeweler** hain?\n"
-                "1. Haan (Yes)\n"
-                "2. Nahi (No)\n\n"
-                "Kripya 1 ya 2 likh kar jawab dein."
-            )
+            reply = "Dhanyawad! Aapne 'Jeweler' select kiya hai. Ab aap apna sawal pooch sakte hain."
         elif incoming_msg in ["2", "Hallmarking Centre"]:
             user.company_type = "hallmarking_centre"
             user.role = "hallmarking_centre"
             db.commit()
-            reply = (
-                "Dhanyawad! Aapne 'Hallmarking Centre' select kiya hai.\n\n"
-                "Kya aapka Assaying & Hallmarking Centre **BIS Recognized** hai?\n"
-                "1. Haan (Yes)\n"
-                "2. Nahi (No)\n\n"
-                "Kripya 1 ya 2 likh kar jawab dein."
-            )
+            reply = "Dhanyawad! Aapne 'Hallmarking Centre' select kiya hai. Ab aap apna sawal pooch sakte hain."
         elif incoming_msg in ["3", "Refinery"]:
             user.company_type = "refinery"
             user.role = "refinery"
             db.commit()
-            reply = (
-                "Dhanyawad! Aapne 'Refinery' select kiya hai.\n\n"
-                "Kya aapki Refinery **NABL Accredited** ya **BIS Licensed** hai?\n"
-                "1. Haan (Yes)\n"
-                "2. Nahi (No)\n\n"
-                "Kripya 1 ya 2 likh kar jawab dein."
-            )
+            reply = "Dhanyawad! Aapne 'Refinery' select kiya hai. Ab aap apna sawal pooch sakte hain."
         else:
-            reply = (
-                "Namaste! Apna chat shuru karne se pehle, please batayein ki aap kis domain se hain:\n"
-                "1. Jeweler\n"
-                "2. Hallmarking Centre\n"
-                "3. Refinery\n\n"
-                "Please 1, 2 ya 3 likh kar jawab dein."
-            )
+            reply = "Namaste! Apna chat shuru karne se pehle, please batayein ki aap kis domain se hain:\n1. Jeweler\n2. Hallmarking Centre\n3. Refinery\n\nPlease 1, 2 ya 3 likh kar jawab dein."
         
-        twiml = MessagingResponse()
-        twiml.message(reply)
-        return Response(content=str(twiml), media_type="application/xml")
-
-    # State 2: Check if follow-up certification status is answered
-    if not user.is_certified:
-        msg_clean = incoming_msg.lower().strip()
-        if msg_clean in ["1", "yes", "ha", "haan", "y"]:
-            user.is_certified = "yes"
-            db.commit()
-            reply = (
-                "Bahut badhiya! Aapka profile successfully setup ho chuka hai. "
-                "Humne aapko ek certified partner ke roop me register kar liya hai.\n\n"
-                "Ab aap hallmarking rules, acts ya audit guidelines ke baare me koi bhi question pooch sakte hain! 😊"
-            )
-        elif msg_clean in ["2", "no", "na", "nahi", "n"]:
-            user.is_certified = "no"
-            db.commit()
-            reply = (
-                "Dhanyawad! Humne aapki details save kar li hain. "
-                "Hum aapko non-certified partners ke guidelines ke roop me content pradan karenge.\n\n"
-                "Ab aap hallmarking rules, registration process ya kisi bhi requirement ke baare me sawal pooch sakte hain! 😊"
-            )
-        else:
-            if user.company_type == "jeweler":
-                reply = (
-                    "Invalid choice. Please reply with **1** for Yes (Haan) or **2** for No (Nahi):\n\n"
-                    "Kya aap ek **BIS Certified Jeweler** hain?"
-                )
-            elif user.company_type == "hallmarking_centre":
-                reply = (
-                    "Invalid choice. Please reply with **1** for Yes (Haan) or **2** for No (Nahi):\n\n"
-                    "Kya aapka Assaying & Hallmarking Centre **BIS Recognized** hai?"
-                )
-            elif user.company_type == "refinery":
-                reply = (
-                    "Invalid choice. Please reply with **1** for Yes (Haan) or **2** for No (Nahi):\n\n"
-                    "Kya aapki Refinery **NABL Accredited** ya **BIS Licensed** hai?"
-                )
-            else:
-                reply = "Please enter 1 for Yes or 2 for No."
-                
         twiml = MessagingResponse()
         twiml.message(reply)
         return Response(content=str(twiml), media_type="application/xml")
