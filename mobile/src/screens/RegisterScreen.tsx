@@ -26,8 +26,16 @@ export default function RegisterScreen({ navigation }: any) {
   const apiUrl = Constants.expoConfig?.extra?.apiUrl;
 
   const handleRegister = async () => {
-    if (!name || !email || !password || !companyName || !designation || !age) {
-      Alert.alert('Error', 'Please fill all fields');
+    if (!name || !email || !password || !age) {
+      Alert.alert('Error', 'Please fill all basic details (Name, Email, Password, Age)');
+      return;
+    }
+    if (!companyName.trim()) {
+      Alert.alert('Reminder', 'Company Name is compulsory to fill!');
+      return;
+    }
+    if (!designation.trim()) {
+      Alert.alert('Reminder', 'Designation is compulsory to fill!');
       return;
     }
 
