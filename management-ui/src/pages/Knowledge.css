@@ -1,0 +1,180 @@
+.knowledge-container {
+  padding: 2rem;
+  background-color: #f8fafc;
+  min-height: 100vh;
+}
+
+.knowledge-header {
+  margin-bottom: 2.5rem;
+}
+
+.knowledge-header h1 {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+}
+
+.knowledge-header p {
+  color: #64748b;
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
+}
+
+.status-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  font-weight: 600;
+  animation: slideDown 0.3s ease-out;
+}
+
+.status-banner.success {
+  background-color: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.status-banner.error {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.upload-section {
+  margin-bottom: 3rem;
+}
+
+.upload-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  background: white;
+  border: 2px dashed #e2e8f0;
+  border-radius: 24px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.upload-card:hover {
+  border-color: #003087;
+  background-color: #f8fafc;
+}
+
+.upload-card input {
+  display: none;
+}
+
+.upload-card h3 {
+  margin: 1.5rem 0 0.5rem;
+  color: #1e293b;
+}
+
+.upload-card p {
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+.upload-card svg {
+  color: #003087;
+}
+
+.uploading {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.progress-bar-ind {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  background: #003087;
+  width: 100%;
+  animation: loadingProgress 2s infinite linear;
+}
+
+.file-list {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #f1f5f9;
+  transition: background-color 0.2s;
+}
+
+.file-item:last-child {
+  border-bottom: none;
+}
+
+.file-item:hover {
+  background-color: #f8fafc;
+}
+
+.file-icon {
+  width: 44px;
+  height: 44px;
+  background: #f1f5f9;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #003087;
+  margin-right: 1.25rem;
+}
+
+.file-info {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.file-name {
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 1rem;
+}
+
+.file-meta {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin-top: 0.25rem;
+}
+
+.delete-file-btn {
+  padding: 0.5rem;
+  background: transparent;
+  color: #94a3b8;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.delete-file-btn:hover {
+  color: #ef4444;
+  background-color: #fee2e2;
+}
+
+@keyframes loadingProgress {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}

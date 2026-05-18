@@ -1,0 +1,7 @@
+alembic/__pycache__/
+*.pyc
+__pycache__/
+.env
+.git
+.venv
+venv/

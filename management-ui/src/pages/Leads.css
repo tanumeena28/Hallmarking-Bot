@@ -1,0 +1,103 @@
+.leads-container {
+  padding: 2rem;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+}
+
+.leads-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.leads-header h1 {
+  color: #003087;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.leads-header p {
+  color: #666;
+  font-size: 1rem;
+}
+
+.export-btn {
+  background-color: #003087;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.export-btn:hover {
+  background-color: #002266;
+  transform: translateY(-2px);
+}
+
+.table-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.leads-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.leads-table th {
+  background-color: #003087;
+  color: white;
+  padding: 1rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.leads-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.leads-table tr:hover {
+  background-color: #f9f9f9;
+}
+
+.status-select {
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.status-new {
+  background-color: #E3F2FD;
+  color: #0D47A1;
+  border-color: #BBDEFB;
+}
+
+.status-contacted {
+  background-color: #FFF8E1;
+  color: #FF6F00;
+  border-color: #FFECB3;
+}
+
+.status-converted {
+  background-color: #E8F5E9;
+  color: #1B5E20;
+  border-color: #C8E6C9;
+}
