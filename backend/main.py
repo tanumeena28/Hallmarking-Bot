@@ -69,6 +69,7 @@ class ChatResponse(BaseModel):
     language: str
     intent: str
     confidence_score: float
+    log_id: int = None
     question: str = None
 
 
@@ -182,8 +183,31 @@ def ask_bot(request: ChatRequest, req: Request, db: Session = Depends(get_db)):
         reply=bot_result["reply"],
         language=bot_result["language"],
         intent=bot_result["intent"],
-        confidence_score=bot_result["confidence_score"]
+        confidence_score=bot_result["confidence_score"],
+        log_id=bot_result.get("log_id")
     )
+
+class FeedbackRequest(BaseModel):
+    log_id: int
+    rating: int  # 1 for thumbs up, -1 for thumbs down
+
+@app.post("/bot/feedback")
+def submit_feedback(request: FeedbackRequest, db: Session = Depends(get_db)):
+    from models import QueryLog
+    from self_correction import trigger_self_correction
+    
+    log = db.query(QueryLog).filter(QueryLog.id == request.log_id).first()
+    if not log:
+        raise HTTPException(status_code=404, detail="Query log not found")
+        
+    log.feedback_rating = request.rating
+    db.commit()
+    
+    if request.rating < 0:
+        print(f"Negative feedback received for log {log.id}. Triggering self-correction...")
+        trigger_self_correction(log.id, db)
+        
+    return {"msg": "Feedback saved successfully"}
 
 @app.post("/bot/ask-audio")
 async def ask_bot_audio(file: UploadFile = File(...), req: Request = None, db: Session = Depends(get_db)):

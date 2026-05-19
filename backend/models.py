@@ -94,3 +94,15 @@ class GoldRate(Base):
     rate_per_gram_22k = Column(Float)
     source = Column(String)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+class FeedbackCorrection(Base):
+    __tablename__ = "feedback_corrections"
+
+    id = Column(Integer, primary_key=True, index=True)
+    query_log_id = Column(Integer, ForeignKey("query_logs.id"))
+    question = Column(Text, index=True)
+    original_answer = Column(Text)
+    corrected_answer = Column(Text)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    query_log = relationship("QueryLog")

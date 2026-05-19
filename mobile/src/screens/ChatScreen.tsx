@@ -22,6 +22,7 @@ interface Message {
   isUser: boolean;
   timestamp: Date;
   language?: string;
+  logId?: number;
 }
 
 export default function ChatScreen() {
@@ -70,7 +71,8 @@ export default function ChatScreen() {
           text: data.reply,
           isUser: false,
           timestamp: new Date(),
-          language: data.language
+          language: data.language,
+          logId: data.log_id
         };
         setMessages(prev => [...prev, botMessage]);
         
@@ -156,7 +158,8 @@ export default function ChatScreen() {
           text: data.reply,
           isUser: false,
           timestamp: new Date(),
-          language: data.language
+          language: data.language,
+          logId: data.log_id
         };
         
         setMessages(prev => [...prev, userMessage, botMessage]);
@@ -189,17 +192,33 @@ export default function ChatScreen() {
   };
 
 
+  const submitFeedback = async (logId: number | undefined, rating: int) => {
+    if (!logId) return;
+    try {
+      const response = await fetch(`${apiUrl}/bot/feedback`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ log_id: logId, rating: rating }),
+      });
+      if (response.ok) {
+        Alert.alert('Feedback Received', rating === 1 ? 'Thank you! 👍' : 'Thank you for helping us improve! We will self-correct this. 👎');
+      }
+    } catch (error) {
+      console.error('Failed to submit feedback', error);
+    }
+  };
+
   const renderMessage = ({ item }: { item: Message }) => (
     <View style={[styles.messageBubble, item.isUser ? styles.userBubble : styles.botBubble]}>
       <Text style={[styles.messageText, item.isUser ? styles.userText : styles.botText]}>
         {item.text}
       </Text>
-      {!item.isUser && (
+      {!item.isUser && item.logId && (
         <View style={styles.feedbackContainer}>
-          <TouchableOpacity onPress={() => Alert.alert('Feedback', 'Liked!')}>
+          <TouchableOpacity onPress={() => submitFeedback(item.logId, 1)}>
             <Text style={styles.feedbackIcon}>👍</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => Alert.alert('Feedback', 'Disliked!')}>
+          <TouchableOpacity onPress={() => submitFeedback(item.logId, -1)}>
             <Text style={styles.feedbackIcon}>👎</Text>
           </TouchableOpacity>
         </View>

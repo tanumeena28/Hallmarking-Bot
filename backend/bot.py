@@ -152,7 +152,7 @@ Answer:"""
         # Call RAG Pipeline directly with the original query
         from rag_pipeline import RAGPipeline
         rag = RAGPipeline()
-        rag_result = rag.generate_response(query, user=user)
+        rag_result = rag.generate_response(query, user=user, db=db)
 
         
         final_answer = rag_result["answer"]
@@ -183,11 +183,12 @@ Answer:"""
         )
         db.add(new_log)
         db.commit()
-
+        db.refresh(new_log)
 
         return {
             "reply": final_answer,
             "language": lang,
             "intent": intent,
-            "confidence_score": rag_result.get("confidence_score", 0.0)
+            "confidence_score": rag_result.get("confidence_score", 0.0),
+            "log_id": new_log.id
         }

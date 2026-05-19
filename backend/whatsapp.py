@@ -148,11 +148,16 @@ async def whatsapp_webhook(request: Request, db: Session = Depends(get_db)):
             twiml = MessagingResponse()
             twiml.message("Feedback ke liye dhanyawad!")
             return Response(content=str(twiml), media_type="application/xml")
-        elif incoming_msg.lower() in ["no", "nahi", "na", "unsatisfied", "bekar"]:
+        elif incoming_msg.lower() in ["no", "nahi", "na", "unsatisfied", "bekar", "wrong", "galat"]:
             last_log.feedback_rating = -1
             db.commit()
+            
+            # TRIGGER AI SELF-CORRECTION LOOP
+            from self_correction import trigger_self_correction
+            trigger_self_correction(last_log.id, db)
+
             twiml = MessagingResponse()
-            twiml.message("Hum koshish karenge ki agli baar behtar jawab dein. Feedback ke liye dhanyawad!")
+            twiml.message("Hum koshish karenge ki agli baar behtar jawab dein. Feedback ke liye dhanyawad! Is answer ko background me improve kiya ja raha hai.")
             return Response(content=str(twiml), media_type="application/xml")
 
     # If not feedback, proceed with regular chat

@@ -76,7 +76,7 @@ class RAGPipeline:
         if score < -0.1: return "negative"
         return "neutral"
 
-    def generate_response(self, query: str, user=None) -> dict:
+    def generate_response(self, query: str, user=None, db=None) -> dict:
         if not self.is_ready or self.vectorstore is None:
             return {
                 "answer": "Error: RAG index not found. Please run ingestion first.",
@@ -88,6 +88,26 @@ class RAGPipeline:
 
         import time
         start_time = time.time()
+
+        # 0. Check Auto-Correction Cache First
+        if db:
+            from models import FeedbackCorrection
+            from sqlalchemy import or_
+            # Basic exact or partial match check
+            correction = db.query(FeedbackCorrection).filter(
+                FeedbackCorrection.question.ilike(f"%{query}%")
+            ).first()
+            if correction:
+                print(f"DEBUG - Found auto-corrected answer for query: {query}")
+                end_time = time.time()
+                return {
+                    "answer": correction.corrected_answer,
+                    "sources": ["Feedback Self-Correction Database"],
+                    "intent": "self_corrected",
+                    "sentiment": "neutral",
+                    "response_time_ms": int((end_time - start_time) * 1000),
+                    "confidence_score": 1.0
+                }
 
         # 1. Classify Intent
         intent = self.classify_intent(query)
