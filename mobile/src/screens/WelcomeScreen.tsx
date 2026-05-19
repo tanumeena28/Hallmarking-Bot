@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 export default function WelcomeScreen({ navigation }: any) {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>NCH Hallmarking Bot</Text>
+      <Text style={styles.title}>Hallmarking Bot</Text>
       
       <TouchableOpacity 
         style={styles.button} 
