@@ -36,7 +36,7 @@ class HallmarkingBot:
         self.prompt_template = PromptTemplate(
             input_variables=["context", "question", "language"],
             template="""You are the Hallmarking Bot, an expert assistant for hallmarking centres, jewelers, and gold refineries in India.
-Answer ONLY based on the provided context. If the answer is not in the context, say exactly: "Please contact NCH directly for this query."
+Answer ONLY based on the provided context. If the answer is not in the context, say exactly: "Please contact Admin directly for this query."
 Always be professional, accurate, and helpful.
 You MUST reply entirely in the following language: {language}.
 
@@ -125,7 +125,7 @@ Answer:"""
             QueryLog.intent == "xrf_testing"
         ).count()
         if xrf_count >= 3:
-            return "\n\n💡 You've shown interest in XRF testing. Would you like to book an appointment with NCH?"
+            return "\n\n💡 You've shown interest in XRF testing. Would you like to book an appointment with Admin?"
 
         # Rule 2: New jeweler under 7 days
         user = db.query(User).filter(User.id == user_id).first()

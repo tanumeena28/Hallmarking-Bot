@@ -110,9 +110,9 @@ class RAGPipeline:
         # 4. Build System Prompt
         user_context = get_user_context_prompt(user)
         
-        system_prompt = f"""You are the NCH Hallmarking Bot, an expert assistant for hallmarking centres, jewelers, and gold refineries in India.
+        system_prompt = f"""You are the Hallmarking Bot, an expert assistant for hallmarking centres, jewelers, and gold refineries in India.
 Answer ONLY based on the provided context below.
-If the answer is not in the context, say exactly: "Please contact NCH directly for this query."
+If the answer is not in the context, say exactly: "Please contact Admin directly for this query."
 Be professional, accurate, and helpful.
 
 CRITICAL: You MUST reply in the SAME language and script as the user's question.
@@ -156,7 +156,7 @@ Question: {query}"""
                 answer = res.json().get("response", "")
             except Exception as e:
                 print(f"Ollama error: {e}")
-                answer = "Please contact NCH directly for this query."
+                answer = "Please contact Admin directly for this query."
 
         elif llm_provider == "groq":
             try:
@@ -168,11 +168,11 @@ Question: {query}"""
                 answer = res.choices[0].message.content
             except Exception as e:
                 print(f"Groq error: {e}")
-                answer = "Please contact NCH directly for this query."
+                answer = "Please contact Admin directly for this query."
 
         # 6. Validate Response
         if not answer or len(answer.strip()) < 5:
-            answer = "Please contact NCH directly for this query."
+            answer = "Please contact Admin directly for this query."
 
         end_time = time.time()
         response_time_ms = int((end_time - start_time) * 1000)

@@ -38,8 +38,8 @@ export default function Login() {
     <div className="login-container">
       <div className="login-card">
         <div className="login-header">
-          <img src="/vite.svg" alt="NCH Logo" className="login-logo" />
-          <h1>NCH Admin Portal</h1>
+          <img src="/vite.svg" alt="Admin Logo" className="login-logo" />
+          <h1>Hallmarking Admin Portal</h1>
           <p>Please log in to continue</p>
         </div>
         <form onSubmit={handleLogin} className="login-form">
@@ -50,7 +50,7 @@ export default function Login() {
               value={email} 
               onChange={(e) => setEmail(e.target.value)} 
               required 
-              placeholder="admin@nch.in"
+              placeholder="admin@hallmarking.in"
             />
           </div>
           <div className="form-group">

@@ -15,7 +15,7 @@ export default function Sidebar() {
     <div className="sidebar">
       <div className="sidebar-header">
         <img src="/vite.svg" alt="Logo" className="sidebar-logo" />
-        <h2>NCH Admin</h2>
+        <h2>Admin Portal</h2>
       </div>
       <nav className="sidebar-nav">
         <NavLink to="/dashboard" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
