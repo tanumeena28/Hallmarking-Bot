@@ -80,10 +80,12 @@ class RegisterRequest(BaseModel):
     password: str
     company_name: str
     designation: str
+    phone: str
     age: int
     gender: str
     role: UserRole
     is_certified: str | None = None
+    bis_registration_number: str | None = None
 
 # --- Endpoints ---
 
@@ -98,8 +100,13 @@ def register_user(request: RegisterRequest, db: Session = Depends(get_db)):
     if request.role not in ALLOWED_SELF_REGISTER_ROLES:
         raise HTTPException(
             status_code=403,
-            detail="This role cannot be self-registered. Contact NCH admin."
+            detail="This role cannot be self-registered. Contact admin."
         )
+
+    if not request.phone or not request.phone.strip():
+        raise HTTPException(status_code=400, detail="Mobile number is compulsory")
+    if not request.bis_registration_number or not request.bis_registration_number.strip():
+        raise HTTPException(status_code=400, detail="BIS Registration Number is compulsory")
         
     existing_user = db.query(User).filter(User.email == request.email).first()
     if existing_user:
@@ -111,6 +118,8 @@ def register_user(request: RegisterRequest, db: Session = Depends(get_db)):
         hashed_password=get_password_hash(request.password),
         company=request.company_name,
         designation=request.designation,
+        phone=request.phone,
+        bis_registration_number=request.bis_registration_number,
         age=request.age,
         gender=request.gender,
         role=request.role.value,

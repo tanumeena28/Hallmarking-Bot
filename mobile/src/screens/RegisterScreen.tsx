@@ -21,6 +21,8 @@ export default function RegisterScreen({ navigation }: any) {
   const [gender, setGender] = useState('Male');
   const [role, setRole] = useState('jeweler');
   const [isCertified, setIsCertified] = useState('yes');
+  const [phone, setPhone] = useState('');
+  const [bisRegistrationNumber, setBisRegistrationNumber] = useState('');
   const [loading, setLoading] = useState(false);
 
   const apiUrl = Constants.expoConfig?.extra?.apiUrl;
@@ -30,12 +32,20 @@ export default function RegisterScreen({ navigation }: any) {
       Alert.alert('Error', 'Please fill all basic details (Name, Email, Password, Age)');
       return;
     }
+    if (!phone.trim()) {
+      Alert.alert('Reminder', 'Mobile Number is compulsory to fill!');
+      return;
+    }
     if (!companyName.trim()) {
       Alert.alert('Reminder', 'Company Name is compulsory to fill!');
       return;
     }
     if (!designation.trim()) {
       Alert.alert('Reminder', 'Designation is compulsory to fill!');
+      return;
+    }
+    if (!bisRegistrationNumber.trim()) {
+      Alert.alert('Reminder', 'BIS Registration Number is compulsory to fill!');
       return;
     }
 
@@ -52,10 +62,12 @@ export default function RegisterScreen({ navigation }: any) {
           password,
           company_name: companyName,
           designation,
+          phone,
           age: parseInt(age),
           gender,
           role,
           is_certified: isCertified,
+          bis_registration_number: bisRegistrationNumber,
         }),
       });
 
@@ -101,6 +113,14 @@ export default function RegisterScreen({ navigation }: any) {
         value={password}
         onChangeText={setPassword}
         secureTextEntry
+      />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Mobile Number"
+        value={phone}
+        onChangeText={setPhone}
+        keyboardType="phone-pad"
       />
       
       <TextInput
@@ -218,6 +238,21 @@ export default function RegisterScreen({ navigation }: any) {
           </View>
         </View>
       )}
+
+      {/* BIS Registration / License Number */}
+      <TextInput
+        style={styles.input}
+        placeholder={
+          role === 'jeweler' 
+            ? 'BIS Jeweler Registration Number' 
+            : role === 'hallmarking_centre' 
+            ? 'BIS AHC Recognition Number' 
+            : 'BIS Refinery License Number'
+        }
+        value={bisRegistrationNumber}
+        onChangeText={setBisRegistrationNumber}
+        autoCapitalize="characters"
+      />
 
       <TouchableOpacity style={styles.button} onPress={handleRegister} disabled={loading}>
         {loading ? (

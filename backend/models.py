@@ -24,6 +24,7 @@ class User(Base):
     is_certified = Column(String(50), nullable=True)
     gender = Column(String(20))
     phone = Column(String(20), nullable=True)
+    bis_registration_number = Column(String(100), nullable=True)
     role = Column(String, nullable=False)  # jeweler, hallmarking_centre, refinery, nch_admin
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
