@@ -154,7 +154,7 @@ async def whatsapp_webhook(request: Request, db: Session = Depends(get_db)):
             
             # TRIGGER AI SELF-CORRECTION LOOP
             from self_correction import trigger_self_correction
-            trigger_self_correction(last_log.id, db)
+            trigger_self_correction(last_log.id)
 
             twiml = MessagingResponse()
             twiml.message("Hum koshish karenge ki agli baar behtar jawab dein. Feedback ke liye dhanyawad! Is answer ko background me improve kiya ja raha hai.")

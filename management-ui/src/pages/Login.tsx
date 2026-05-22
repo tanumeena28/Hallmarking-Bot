@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import API_URL from '../config';
 import './Login.css';
 
 export default function Login() {
@@ -16,7 +17,7 @@ export default function Login() {
     formData.append('username', email); // OAuth2 expects 'username'
     formData.append('password', password);
 
-    fetch('http://127.0.0.1:8000/auth/login', {
+    fetch(`${API_URL}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: formData
@@ -38,7 +39,7 @@ export default function Login() {
     <div className="login-container">
       <div className="login-card">
         <div className="login-header">
-          <img src="/vite.svg" alt="Admin Logo" className="login-logo" />
+          <img src="/logo.png" alt="Admin Logo" className="login-logo" style={{ borderRadius: '12px' }} />
           <h1>Hallmarking Admin Portal</h1>
           <p>Please log in to continue</p>
         </div>

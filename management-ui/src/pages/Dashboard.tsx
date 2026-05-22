@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Legend } from 'recharts';
 import { Users, MessageSquare, Target, Activity } from 'lucide-react';
+import API_URL from '../config';
 import './Dashboard.css';
 
 const COLORS = ['#003087', '#FFD700', '#00C49F', '#FF8042', '#8884d8'];
@@ -22,30 +23,30 @@ export default function Dashboard() {
     const token = localStorage.getItem('token');
     const headers = { 'Authorization': `Bearer ${token}` };
 
-    fetch('http://localhost:8000/admin/analytics/summary', { headers })
+    fetch(`${API_URL}/admin/analytics/summary`, { headers })
       .then(res => res.json())
       .then(data => setSummary(data))
       .catch(err => console.error("Failed to fetch summary:", err));
 
-    fetch('http://localhost:8000/admin/analytics/query-volume', { headers })
+    fetch(`${API_URL}/admin/analytics/query-volume`, { headers })
       .then(res => res.json())
       .then(data => { if(Array.isArray(data)) setQueryVolume(data); })
       .catch(err => console.error("Failed to fetch query volume:", err));
 
 
-    fetch('http://localhost:8000/admin/analytics/intent-distribution', { headers })
+    fetch(`${API_URL}/admin/analytics/intent-distribution`, { headers })
       .then(res => res.json())
       .then(data => { if(Array.isArray(data)) setIntentDist(data); })
       .catch(err => console.error("Failed to fetch intent dist:", err));
 
 
-    fetch('http://localhost:8000/admin/analytics/top-questions', { headers })
+    fetch(`${API_URL}/admin/analytics/top-questions`, { headers })
       .then(res => res.json())
       .then(data => { if(Array.isArray(data)) setTopQuestions(data); })
       .catch(err => console.error("Failed to fetch top questions:", err));
 
 
-    fetch('http://localhost:8000/admin/analytics/sentiment-trend', { headers })
+    fetch(`${API_URL}/admin/analytics/sentiment-trend`, { headers })
       .then(res => res.json())
       .then(data => { if(Array.isArray(data)) setSentimentTrend(data); })
       .catch(err => console.error("Failed to fetch sentiment trend:", err));

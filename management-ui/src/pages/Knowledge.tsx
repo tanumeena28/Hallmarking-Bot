@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import API_URL from '../config';
 import './Knowledge.css';
 import { Upload, FileText, Trash2, AlertCircle, CheckCircle } from 'lucide-react';
 
@@ -19,7 +20,7 @@ export default function Knowledge() {
 
   const fetchFiles = () => {
     const token = localStorage.getItem('token');
-    fetch(`http://${window.location.hostname}:8000/admin/knowledge-files`, {
+    fetch(`${API_URL}/admin/knowledge-files`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
       .then(res => res.json())
@@ -39,7 +40,7 @@ export default function Knowledge() {
 
     const token = localStorage.getItem('token');
     try {
-      const res = await fetch(`http://${window.location.hostname}:8000/admin/upload-knowledge`, {
+      const res = await fetch(`${API_URL}/admin/upload-knowledge`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData
@@ -63,7 +64,7 @@ export default function Knowledge() {
     
     const token = localStorage.getItem('token');
     try {
-      const res = await fetch(`http://${window.location.hostname}:8000/admin/knowledge-files/${filename}`, {
+      const res = await fetch(`${API_URL}/admin/knowledge-files/${filename}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });

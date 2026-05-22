@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import API_URL from '../config';
 import './Users.css';
 
 interface User {
@@ -13,6 +14,19 @@ interface User {
   gender?: string;
   company_type?: string;
   created_at: string;
+  invited_by?: {
+    id: number;
+    name: string;
+    email: string;
+  } | null;
+  teammates?: {
+    email: string;
+    name: string;
+    phone?: string | null;
+    designation?: string | null;
+    status: string;
+    joined_at?: string | null;
+  }[];
 }
 
 export default function Users() {
@@ -20,10 +34,40 @@ export default function Users() {
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [chatHistory, setChatHistory] = useState<any[]>([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
+
+  useEffect(() => {
+    if (!selectedUser) {
+      setChatHistory([]);
+      return;
+    }
+    setLoadingHistory(true);
+    const token = localStorage.getItem('token');
+    fetch(`${API_URL}/admin/users/${selectedUser.id}/chat-history`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+      .then(res => {
+        if (!res.ok) throw new Error("Failed to fetch history");
+        return res.json();
+      })
+      .then(data => {
+        if (Array.isArray(data)) {
+          setChatHistory(data);
+        } else {
+          setChatHistory([]);
+        }
+      })
+      .catch(err => {
+        console.error("Failed to fetch chat history:", err);
+        setChatHistory([]);
+      })
+      .finally(() => setLoadingHistory(false));
+  }, [selectedUser]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    fetch(`http://${window.location.hostname}:8000/admin/users`, {
+    fetch(`${API_URL}/admin/users`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
       .then(res => {
@@ -49,7 +93,7 @@ export default function Users() {
     const token = localStorage.getItem('token');
     if (!window.confirm("Are you sure you want to reset this user's password?")) return;
     
-    fetch(`http://localhost:8000/admin/users/${userId}/reset-password`, {
+    fetch(`${API_URL}/admin/users/${userId}/reset-password`, {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${token}` }
     })
@@ -179,15 +223,16 @@ export default function Users() {
         <div className="modal-overlay" onClick={() => setSelectedUser(null)}>
           <div className="user-modal" onClick={e => e.stopPropagation()}>
             <button className="close-modal" onClick={() => setSelectedUser(null)}>&times;</button>
-            <div className="modal-header" style={{ borderBottomColor: `hsl(${( (selectedUser.id || 0) * 40) % 360}, 70%, 50%)` }}>
+            
+            <div className="modal-header-container">
               <div className="modal-avatar" style={{ backgroundColor: `hsl(${( (selectedUser.id || 0) * 40) % 360}, 70%, 50%)` }}>
                 {selectedUser.name ? selectedUser.name.charAt(0) : '?'}
               </div>
               <h2>{selectedUser.name}</h2>
               <span className={`role-badge role-${selectedUser.role}`}>{selectedUser.role || 'user'}</span>
             </div>
-            <div className="modal-body">
 
+            <div className="modal-left-column">
               <div className="info-section">
                 <h3>Contact Details</h3>
                 <div className="info-row"><span>Email:</span> {selectedUser.email}</div>
@@ -201,15 +246,98 @@ export default function Users() {
                 <div className="info-row"><span>Type:</span> {selectedUser.company_type || 'N/A'}</div>
                 <div className="info-row"><span>Designation:</span> {selectedUser.designation || 'N/A'}</div>
               </div>
-              <div className="info-section">
+               <div className="info-section">
                 <h3>Account Info</h3>
                 <div className="info-row"><span>Joined:</span> {new Date(selectedUser.created_at).toLocaleString()}</div>
                 <div className="info-row"><span>User ID:</span> {selectedUser.id}</div>
               </div>
+              
+              {selectedUser.invited_by && (
+                <div className="info-section">
+                  <h3>Invited By</h3>
+                  <div className="info-row"><span>Name:</span> {selectedUser.invited_by.name}</div>
+                  <div className="info-row"><span>Email:</span> {selectedUser.invited_by.email}</div>
+                  <div className="info-row"><span>ID:</span> #{selectedUser.invited_by.id}</div>
+                </div>
+              )}
+
+              {selectedUser.teammates && selectedUser.teammates.length > 0 && (
+                <div className="info-section">
+                  <h3>Invited Teammates</h3>
+                  <div className="teammates-list" style={{ maxHeight: '180px', overflowY: 'auto', marginTop: '0.5rem' }}>
+                    {selectedUser.teammates.map((tm, idx) => (
+                      <div key={idx} className="teammate-item" style={{
+                        padding: '8px', 
+                        backgroundColor: '#f8fafc', 
+                        borderRadius: '8px', 
+                        marginBottom: '8px',
+                        border: '1px solid #e2e8f0',
+                        color: '#333'
+                      }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontWeight: '600', fontSize: '0.85rem' }}>{tm.name}</span>
+                          <span style={{ 
+                            fontSize: '0.7rem', 
+                            padding: '2px 6px', 
+                            borderRadius: '12px', 
+                            backgroundColor: tm.status === 'joined' ? '#dcfce7' : '#fef9c3',
+                            color: tm.status === 'joined' ? '#15803d' : '#854d0e',
+                            fontWeight: 'bold',
+                            textTransform: 'capitalize'
+                          }}>
+                            {tm.status}
+                          </span>
+                        </div>
+                        <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '2px' }}>Email: {tm.email}</div>
+                        {tm.phone && <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Phone: {tm.phone}</div>}
+                        {tm.designation && <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Designation: {tm.designation}</div>}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="modal-footer" style={{ marginTop: '1.5rem' }}>
+                <button className="reset-btn" onClick={() => handleResetPassword(selectedUser.id)}>Reset Password</button>
+              </div>
             </div>
-            <div className="modal-footer">
-              <button className="reset-btn" onClick={() => handleResetPassword(selectedUser.id)}>Reset Password</button>
+
+            <div className="modal-right-column">
+              <h3 className="chat-history-title">Chat History</h3>
+              {loadingHistory ? (
+                <div className="no-chat-history">Loading history...</div>
+              ) : chatHistory.length === 0 ? (
+                <div className="no-chat-history">No chat history available.</div>
+              ) : (
+                <div className="chat-sessions-list">
+                  {chatHistory.map((conv, idx) => (
+                    <div key={conv.conversation_id || idx} className="session-block">
+                      <div className="session-info">
+                        <span>Platform: {conv.platform || 'app'}</span>
+                        <span>{new Date(conv.started_at).toLocaleDateString()}</span>
+                      </div>
+                      <div className="session-messages">
+                        {conv.messages && conv.messages.length > 0 ? (
+                           conv.messages.map((m: any) => (
+                             <div key={m.id} className={`msg-bubble role-${m.role}`}>
+                               <div>{m.content}</div>
+                               <div className="msg-time-stamp">
+                                 {new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                               </div>
+                             </div>
+                           ))
+                        ) : (
+                          <div style={{ fontSize: '0.8rem', color: '#888', fontStyle: 'italic' }}>
+                            Empty conversation
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
+
           </div>
         </div>
       )}

@@ -14,6 +14,7 @@ interface GoldRate {
   date: string;
   rate_24k: number;
   rate_22k: number;
+  rate_silver?: number;
   source: string;
   updated_at: string;
 }
@@ -33,7 +34,7 @@ export default function GoldRateScreen() {
       if (response.ok) {
         setRate(data);
       } else {
-        Alert.alert('Error', data.detail || 'Failed to fetch gold rate');
+        Alert.alert('Error', data.detail || 'Failed to fetch metal rates');
       }
     } catch (error) {
       Alert.alert('Error', 'Could not connect to server');
@@ -69,7 +70,7 @@ export default function GoldRateScreen() {
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#003087']} />
       }
     >
-      <Text style={styles.title}>Live Gold Rate</Text>
+      <Text style={styles.title}>Live Gold & Silver Rates</Text>
       
       {rate ? (
         <View style={styles.cardsContainer}>
@@ -85,13 +86,21 @@ export default function GoldRateScreen() {
             <Text style={styles.cardUnit}>per gram</Text>
           </View>
 
+          {rate.rate_silver !== undefined && rate.rate_silver !== null && (
+            <View style={styles.cardSilver}>
+              <Text style={styles.cardTitleSilver}>Silver</Text>
+              <Text style={styles.cardValueSilver}>₹{rate.rate_silver.toFixed(2)}</Text>
+              <Text style={styles.cardUnitSilver}>per gram</Text>
+            </View>
+          )}
+
           <View style={styles.metaContainer}>
             <Text style={styles.metaText}>Source: {rate.source}</Text>
             <Text style={styles.metaText}>Last Updated: {new Date(rate.updated_at).toLocaleString()}</Text>
           </View>
         </View>
       ) : (
-        <Text style={styles.errorText}>No gold rate data available.</Text>
+        <Text style={styles.errorText}>No rate data available.</Text>
       )}
     </ScrollView>
   );
@@ -149,6 +158,36 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   cardUnit: {
+    fontSize: 14,
+    color: '#666',
+  },
+  cardSilver: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 20,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#eee',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  cardTitleSilver: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 10,
+  },
+  cardValueSilver: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#4a5568',
+    marginBottom: 5,
+  },
+  cardUnitSilver: {
     fontSize: 14,
     color: '#666',
   },

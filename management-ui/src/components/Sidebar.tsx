@@ -14,7 +14,7 @@ export default function Sidebar() {
   return (
     <div className="sidebar">
       <div className="sidebar-header">
-        <img src="/vite.svg" alt="Logo" className="sidebar-logo" />
+        <img src="/logo.png" alt="Logo" className="sidebar-logo" style={{ borderRadius: '8px' }} />
         <h2>Admin Portal</h2>
       </div>
       <nav className="sidebar-nav">

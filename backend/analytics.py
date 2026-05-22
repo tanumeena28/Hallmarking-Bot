@@ -6,7 +6,7 @@ import csv
 import io
 
 from database import get_db
-from models import User, QueryLog, Lead
+from models import User, QueryLog, Lead, Conversation, Message
 from auth import require_permission
 
 router = APIRouter()
@@ -177,18 +177,39 @@ def get_users(db: Session = Depends(get_db), current_user: User = Depends(requir
     } for u in users]
 
 
-@router.post("/bot/feedback")
-def save_feedback(data: dict, db: Session = Depends(get_db)):
-    query_log_id = data.get("query_log_id")
-    rating = data.get("rating")
+
+
+@router.get("/admin/users/{user_id}/chat-history")
+def get_user_chat_history(user_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_permission(["nch_admin"]))):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    conversations = db.query(Conversation).filter(Conversation.user_id == user_id).order_by(Conversation.started_at.desc()).all()
     
-    if rating not in [1, -1]:
-        raise HTTPException(status_code=400, detail="Invalid rating")
-        
-    log = db.query(QueryLog).filter(QueryLog.id == query_log_id).first()
-    if not log:
-        raise HTTPException(status_code=404, detail="Query log not found")
-        
-    log.feedback_rating = rating
-    db.commit()
-    return {"msg": "Feedback saved"}
+    results = []
+    for conv in conversations:
+        msgs = db.query(Message).filter(Message.conversation_id == conv.id).order_by(Message.timestamp.asc()).all()
+        messages_list = []
+        for m in msgs:
+            rating = None
+            if m.query_log_id:
+                log = db.query(QueryLog).filter(QueryLog.id == m.query_log_id).first()
+                if log:
+                    rating = log.feedback_rating
+            messages_list.append({
+                "id": m.id,
+                "role": m.role,
+                "content": m.content,
+                "timestamp": m.timestamp,
+                "query_log_id": m.query_log_id,
+                "feedback_rating": rating
+            })
+        results.append({
+            "conversation_id": conv.id,
+            "session_id": conv.session_id,
+            "platform": conv.platform,
+            "started_at": conv.started_at,
+            "messages": messages_list
+        })
+    return results

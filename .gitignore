@@ -47,3 +47,7 @@ desktop.ini
 *.njsproj
 *.sln
 *.sw?
+
+# Agent Scratch Files
+scratch/
+

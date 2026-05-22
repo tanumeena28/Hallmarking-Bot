@@ -52,6 +52,19 @@ Answer:"""
 
     def detect_language(self, text: str) -> str:
         try:
+            text_lower = text.lower()
+            # Heuristic for common Hinglish/Romanized Indian words
+            hinglish_keywords = {
+                "kya", "hai", "karo", "kro", "batao", "btao", "kaise", "hota", 
+                "hoti", "krna", "karna", "hoga", "hogi", "ko", "se", "ka", "ki", 
+                "ke", "nhi", "nahi", "bharna", "karu", "krru", "btao", "aaj", "aajka",
+                "rate", "sone", "chandi", "pure", "purity", "mila", "milega", "kab"
+            }
+            words = set(text_lower.split())
+            if words.intersection(hinglish_keywords):
+                return "hinglish"
+                
+            from langdetect import detect
             return detect(text)
         except:
             return 'en'
@@ -74,7 +87,7 @@ Answer:"""
 
     def classify_intent(self, text: str) -> str:
         text_lower = text.lower()
-        if "rate" in text_lower or "price" in text_lower:
+        if any(w in text_lower for w in ["rate", "price", "cost", "value", "bhav", "bhau", "dhara", "gold", "silver", "chandi"]):
             return "gold_rate"
         elif "xrf" in text_lower:
             return "xrf_testing"
@@ -141,7 +154,7 @@ Answer:"""
 
         return ""
 
-    def ask(self, query: str, user_id: int, db: Session, platform: str = "app") -> dict:
+    def ask(self, query: str, user_id: int, db: Session, platform: str = "app", conversation_id: int = None) -> dict:
         from models import User
         # 0. Get user from database
         user = db.query(User).filter(User.id == user_id).first()
@@ -182,6 +195,25 @@ Answer:"""
             platform=platform
         )
         db.add(new_log)
+        db.flush()
+        
+        # If conversation_id is provided, log to Message table
+        if conversation_id:
+            from models import Message
+            user_msg = Message(
+                conversation_id=conversation_id,
+                role="user",
+                content=query
+            )
+            bot_msg = Message(
+                conversation_id=conversation_id,
+                role="bot",
+                content=final_answer,
+                query_log_id=new_log.id
+            )
+            db.add(user_msg)
+            db.add(bot_msg)
+
         db.commit()
         db.refresh(new_log)
 

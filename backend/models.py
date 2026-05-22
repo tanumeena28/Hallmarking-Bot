@@ -53,6 +53,7 @@ class Message(Base):
     content = Column(Text)
     timestamp = Column(DateTime(timezone=True), server_default=func.now())
     response_time_ms = Column(Float)
+    query_log_id = Column(Integer, ForeignKey("query_logs.id"), nullable=True)
 
     conversation = relationship("Conversation", back_populates="messages")
 
@@ -66,12 +67,11 @@ class QueryLog(Base):
     retrieved_chunk_ids = Column(JSON)
     confidence_score = Column(Float)
     language = Column(String) # en, hi, gu
+    feedback_rating = Column(Integer) # e.g. 1 (thumbs up), -1 (thumbs down)
+    timestamp = Column(DateTime(timezone=True), server_default=func.now())
     intent = Column(String(50))
     sentiment = Column(String(20))
-    feedback_rating = Column(Integer) # e.g. 1 (thumbs up), -1 (thumbs down)
     platform = Column(String(20)) # app or whatsapp
-    timestamp = Column(DateTime(timezone=True), server_default=func.now())
-
 
     user = relationship("User", back_populates="query_logs")
 
@@ -92,6 +92,7 @@ class GoldRate(Base):
     date = Column(DateTime(timezone=True), primary_key=True, server_default=func.now())
     rate_per_gram_24k = Column(Float)
     rate_per_gram_22k = Column(Float)
+    rate_per_gram_silver = Column(Float, nullable=True)
     source = Column(String)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
@@ -106,3 +107,17 @@ class FeedbackCorrection(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     query_log = relationship("QueryLog")
+
+class Invitation(Base):
+    __tablename__ = "invitations"
+
+    id = Column(Integer, primary_key=True, index=True)
+    token = Column(String, unique=True, index=True, nullable=False)
+    inviter_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    invitee_email = Column(String, nullable=False)
+    invitee_name = Column(String, nullable=True)
+    status = Column(String, default="pending")  # pending, accepted
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    accepted_at = Column(DateTime(timezone=True), nullable=True)
+
+    inviter = relationship("User", foreign_keys=[inviter_id])

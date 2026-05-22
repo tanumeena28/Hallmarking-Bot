@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import API_URL from '../config';
 import './Leads.css'; // Reuse table styles
 
 interface Log {
@@ -20,7 +21,7 @@ export default function Logs() {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    fetch(`http://${window.location.hostname}:8000/admin/logs`, {
+    fetch(`${API_URL}/admin/logs`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
       .then(res => res.json())

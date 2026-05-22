@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import API_URL from '../config';
 import './Leads.css';
 
 interface Lead {
@@ -19,7 +20,7 @@ export default function Leads() {
 
   const fetchLeads = () => {
     const token = localStorage.getItem('token');
-    fetch(`http://${window.location.hostname}:8000/admin/leads`, {
+    fetch(`${API_URL}/admin/leads`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
 
@@ -31,7 +32,7 @@ export default function Leads() {
 
   const handleStatusChange = (leadId, newStatus) => {
     const token = localStorage.getItem('token');
-    fetch(`http://localhost:8000/admin/leads/${leadId}`, {
+    fetch(`${API_URL}/admin/leads/${leadId}`, {
       method: 'PATCH',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -49,7 +50,7 @@ export default function Leads() {
 
   const handleExportCSV = () => {
     const token = localStorage.getItem('token');
-    fetch('http://localhost:8000/admin/analytics/export-csv', {
+    fetch(`${API_URL}/admin/analytics/export-csv`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
       .then(res => res.blob())

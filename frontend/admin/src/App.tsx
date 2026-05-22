@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import './index.css';
 
+const API_URL = import.meta.env.VITE_API_URL || `http://${window.location.hostname}:8000`;
+
 function App() {
   const [token, setToken] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('chat');
@@ -24,7 +26,7 @@ function App() {
       formData.append('username', email); // OAuth2PasswordRequestForm uses 'username'
       formData.append('password', password);
 
-      const response = await fetch('http://127.0.0.1:8000/auth/login', {
+      const response = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -54,7 +56,7 @@ function App() {
     setLoading(true);
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/bot/ask', {
+      const response = await fetch(`${API_URL}/bot/ask`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
