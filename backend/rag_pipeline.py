@@ -6,9 +6,9 @@ import requests
 from dotenv import load_dotenv
 # pyrefly: ignore [missing-import]
 from textblob import TextBlob
-from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
 from groq import Groq
+from embeddings import get_embeddings
 
 load_dotenv()
 
@@ -27,7 +27,8 @@ def get_user_context_prompt(user) -> str:
         return """
         This user owns or works at a hallmarking centre.
         Focus on: XRF machine calibration, BIS compliance,
-        license renewal, equipment maintenance.
+        required documents, gold purity standards (916, 750, 585).
+        If new jeweler: proactively guide BIS registration steps.
         """
     elif user.role == "refinery":
         return """
@@ -41,7 +42,7 @@ def get_user_context_prompt(user) -> str:
 class RAGPipeline:
     def __init__(self, chroma_dir="../data/chroma_db"):
         self.chroma_dir = chroma_dir
-        self.embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+        self.embeddings = get_embeddings()
         
         if os.path.exists(chroma_dir):
             self.vectorstore = Chroma(

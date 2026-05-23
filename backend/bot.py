@@ -3,8 +3,6 @@ import os
 from langdetect import detect
 # pyrefly: ignore [missing-import]
 from langchain_groq import ChatGroq
-from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_community.vectorstores import FAISS
 from langchain_core.prompts import PromptTemplate
 from dotenv import load_dotenv
 from deep_translator import GoogleTranslator
@@ -16,22 +14,13 @@ class HallmarkingBot:
     def __init__(self, index_path="../data/faiss_index"):
         self.index_path = index_path
         
-        # Free local embeddings
-        self.embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
-        
         # Groq LLM (Fast Llama-3.3-70b-versatile)
         self.llm = ChatGroq(
             temperature=0, 
             groq_api_key=os.getenv("GROQ_API_KEY"), 
             model_name="llama-3.3-70b-versatile"
         )
-        
-        if os.path.exists(index_path):
-            self.vectorstore = FAISS.load_local(index_path, self.embeddings, allow_dangerous_deserialization=True)
-            self.is_ready = True
-        else:
-            self.vectorstore = None
-            self.is_ready = False
+        self.is_ready = True
 
         self.prompt_template = PromptTemplate(
             input_variables=["context", "question", "language"],

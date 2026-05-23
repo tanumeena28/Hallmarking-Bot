@@ -2,9 +2,9 @@ import os
 import pandas as pd
 from langchain_community.document_loaders import PyPDFLoader, CSVLoader, TextLoader, DataFrameLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
 from dotenv import load_dotenv
+from embeddings import get_embeddings
 
 load_dotenv()
 
@@ -17,7 +17,7 @@ def ingest_knowledge_base(data_dir="../data/knowledge", chroma_dir="../data/chro
         shutil.rmtree(chroma_dir)
         
     # 1. Setup Embeddings
-    embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+    embeddings = get_embeddings()
     
     # 2. Setup Chroma
     vectorstore = Chroma(
