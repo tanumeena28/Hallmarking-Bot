@@ -1,0 +1,8 @@
+# Replace with your company subdomains (e.g. admin.mycompany.com & api.mycompany.com)
+admin.yourdomain.com {
+    reverse_proxy management-ui:80
+}
+
+api.yourdomain.com {
+    reverse_proxy backend:8000
+}

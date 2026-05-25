@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: nch_audit
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secretpassword}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+
+  backend:
+    build: ./backend
+    environment:
+      - DATABASE_URL=postgresql://admin:${DB_PASSWORD:-secretpassword}@db:5432/nch_audit
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - LLM_PROVIDER=groq
+      - JWT_SECRET=${JWT_SECRET}
+      - SARVAM_API_KEY=${SARVAM_API_KEY}
+      - HUGGINGFACEHUB_API_TOKEN=${HUGGINGFACEHUB_API_TOKEN}
+      - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID}
+      - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN}
+      - TWILIO_WHATSAPP_NUMBER=${TWILIO_WHATSAPP_NUMBER}
+    volumes:
+      - ./data:/data
+    depends_on:
+      - db
+    restart: always
+
+  management-ui:
+    build: ./management-ui
+    depends_on:
+      - backend
+    restart: always
+
+  caddy:
+    image: caddy:2-alpine
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  postgres_data:
+  caddy_data:
+  caddy_config:
