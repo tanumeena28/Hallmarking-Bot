@@ -48,14 +48,9 @@ async def whatsapp_webhook(request: Request, db: Session = Depends(get_db)):
                 data, samplerate = sf.read(tmp_path)
                 sf.write(wav_path, data, samplerate)
                 
-                client = Groq(api_key=os.getenv("GROQ_API_KEY"))
-                with open(wav_path, "rb") as audio_file:
-                    transcription = client.audio.transcriptions.create(
-                        file=(f"voice.wav", audio_file.read()),
-                        model="whisper-large-v3",
-                        response_format="text"
-                    )
-                incoming_msg = transcription
+
+                from stt_service import transcribe_audio
+                incoming_msg = transcribe_audio(wav_path, content_type="audio/wav")
                 print(f"DEBUG - Transcription: {incoming_msg}")
             except Exception as e:
                 print(f"STT Error: {e}")

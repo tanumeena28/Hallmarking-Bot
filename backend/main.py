@@ -1031,18 +1031,12 @@ async def ask_bot_audio(conversation_id: int = None, file: UploadFile = File(...
         tmp.write(await file.read())
         tmp_path = tmp.name
         
+
     try:
-        from groq import Groq
-        client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+        from stt_service import transcribe_audio
+        content_type = file.content_type or "audio/wav"
+        transcription = transcribe_audio(tmp_path, content_type=content_type)
         
-        with open(tmp_path, "rb") as audio_file:
-            transcription = client.audio.transcriptions.create(
-                file=(file.filename, audio_file.read()),
-                model="whisper-large-v3",
-                response_format="text"
-            )
-            
-        # Refine transcription if it contains homophones or is garbled
         from rag_pipeline import RAGPipeline
         rag = RAGPipeline()
         refined_transcription = rag.refine_fuzzy_transcript(transcription)
