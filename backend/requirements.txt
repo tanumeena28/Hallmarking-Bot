@@ -22,4 +22,4 @@ deep-translator==1.11.4
 pypdf==6.11.0
 python-multipart==0.0.28
 soundfile==0.14.0
-bcrypt==3.2.0
+bcrypt==4.0.1
