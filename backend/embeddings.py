@@ -6,7 +6,7 @@ class HuggingFaceAPIEmbeddings(Embeddings):
     def __init__(self, model: str = "sentence-transformers/all-MiniLM-L6-v2", api_token: str = None):
         self.model = model
         self.api_token = api_token
-        self.api_url = f"https://router.huggingface.co/hf-inference/models/{model}"
+        self.api_url = f"https://router.huggingface.co/hf-inference/models/{model}/pipeline/feature-extraction"
         self.headers = {"Authorization": f"Bearer {api_token}"} if api_token else {}
 
     def _embed(self, texts: list[str]) -> list[list[float]]:
