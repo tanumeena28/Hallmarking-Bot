@@ -30,6 +30,12 @@
     },
     "plugins": [
       "expo-secure-store"
-    ]
+    ],
+    "extra": {
+      "apiUrl": "https://bot.hallmarkingcentre.in/api",
+      "eas": {
+        "projectId": "fc2a089d-b6a7-4a5c-8b40-ed5716d4e5a2"
+      }
+    }
   }
 }

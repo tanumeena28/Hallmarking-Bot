@@ -315,6 +315,7 @@ export default function ProfileScreen({ navigation }: any) {
                 <TextInput
                   style={styles.input}
                   placeholder="Full Name"
+                  placeholderTextColor="#888"
                   value={editName}
                   onChangeText={setEditName}
                 />
@@ -323,6 +324,7 @@ export default function ProfileScreen({ navigation }: any) {
                 <TextInput
                   style={styles.input}
                   placeholder="Company Name"
+                  placeholderTextColor="#888"
                   value={editCompany}
                   onChangeText={setEditCompany}
                 />
@@ -331,6 +333,7 @@ export default function ProfileScreen({ navigation }: any) {
                 <TextInput
                   style={styles.input}
                   placeholder="Designation"
+                  placeholderTextColor="#888"
                   value={editDesignation}
                   onChangeText={setEditDesignation}
                 />
@@ -339,6 +342,7 @@ export default function ProfileScreen({ navigation }: any) {
                 <TextInput
                   style={styles.input}
                   placeholder="BIS Registration Number"
+                  placeholderTextColor="#888"
                   value={editBisRegistrationNumber}
                   onChangeText={setEditBisRegistrationNumber}
                 />
@@ -347,6 +351,7 @@ export default function ProfileScreen({ navigation }: any) {
                 <TextInput
                   style={styles.input}
                   placeholder="Mobile Number"
+                  placeholderTextColor="#888"
                   value={editPhone}
                   onChangeText={setEditPhone}
                   keyboardType="phone-pad"
@@ -356,6 +361,7 @@ export default function ProfileScreen({ navigation }: any) {
                 <TextInput
                   style={styles.input}
                   placeholder="Age"
+                  placeholderTextColor="#888"
                   value={editAge}
                   onChangeText={setEditAge}
                   keyboardType="numeric"
@@ -549,6 +555,7 @@ export default function ProfileScreen({ navigation }: any) {
               <TextInput
                 style={styles.input}
                 placeholder="Full Name"
+                placeholderTextColor="#888"
                 value={memberName}
                 onChangeText={setMemberName}
               />
@@ -557,6 +564,7 @@ export default function ProfileScreen({ navigation }: any) {
               <TextInput
                 style={styles.input}
                 placeholder="Email Address"
+                placeholderTextColor="#888"
                 value={memberEmail}
                 onChangeText={setMemberEmail}
                 keyboardType="email-address"
@@ -567,6 +575,7 @@ export default function ProfileScreen({ navigation }: any) {
               <TextInput
                 style={styles.input}
                 placeholder="Password"
+                placeholderTextColor="#888"
                 value={memberPassword}
                 onChangeText={setMemberPassword}
                 secureTextEntry
@@ -576,6 +585,7 @@ export default function ProfileScreen({ navigation }: any) {
               <TextInput
                 style={styles.input}
                 placeholder="Designation (e.g. Sales, Assayer)"
+                placeholderTextColor="#888"
                 value={memberDesignation}
                 onChangeText={setMemberDesignation}
               />
@@ -584,6 +594,7 @@ export default function ProfileScreen({ navigation }: any) {
               <TextInput
                 style={styles.input}
                 placeholder="Mobile Number"
+                placeholderTextColor="#888"
                 value={memberPhone}
                 onChangeText={setMemberPhone}
                 keyboardType="phone-pad"
@@ -593,6 +604,7 @@ export default function ProfileScreen({ navigation }: any) {
               <TextInput
                 style={styles.input}
                 placeholder="Age"
+                placeholderTextColor="#888"
                 value={memberAge}
                 onChangeText={setMemberAge}
                 keyboardType="numeric"
@@ -652,6 +664,7 @@ export default function ProfileScreen({ navigation }: any) {
               <TextInput
                 style={styles.input}
                 placeholder="colleague@email.com"
+                placeholderTextColor="#888"
                 value={inviteEmail}
                 onChangeText={setInviteEmail}
                 keyboardType="email-address"
@@ -662,6 +675,7 @@ export default function ProfileScreen({ navigation }: any) {
               <TextInput
                 style={styles.input}
                 placeholder="Full Name"
+                placeholderTextColor="#888"
                 value={inviteName}
                 onChangeText={setInviteName}
               />
@@ -924,6 +938,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontSize: 16,
     backgroundColor: '#fafafa',
+    color: '#333',
   },
   row: {
     flexDirection: 'row',

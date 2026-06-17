@@ -216,6 +216,7 @@ export default function RegisterScreen({ route, navigation }: any) {
         <TextInput
           style={styles.input}
           placeholder="Full Name"
+          placeholderTextColor="#888"
           value={name}
           onChangeText={setName}
         />
@@ -223,6 +224,7 @@ export default function RegisterScreen({ route, navigation }: any) {
         <TextInput
           style={[styles.input, isInviteVerified && styles.disabledInput]}
           placeholder="Email"
+          placeholderTextColor="#888"
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
@@ -233,6 +235,7 @@ export default function RegisterScreen({ route, navigation }: any) {
         <TextInput
           style={styles.input}
           placeholder="Password"
+          placeholderTextColor="#888"
           value={password}
           onChangeText={setPassword}
           secureTextEntry
@@ -241,6 +244,7 @@ export default function RegisterScreen({ route, navigation }: any) {
         <TextInput
           style={styles.input}
           placeholder="Mobile Number"
+          placeholderTextColor="#888"
           value={phone}
           onChangeText={setPhone}
           keyboardType="phone-pad"
@@ -249,6 +253,7 @@ export default function RegisterScreen({ route, navigation }: any) {
         <TextInput
           style={styles.input}
           placeholder="Designation"
+          placeholderTextColor="#888"
           value={designation}
           onChangeText={setDesignation}
         />
@@ -256,6 +261,7 @@ export default function RegisterScreen({ route, navigation }: any) {
         <TextInput
           style={styles.input}
           placeholder="Age"
+          placeholderTextColor="#888"
           value={age}
           onChangeText={setAge}
           keyboardType="numeric"
@@ -367,6 +373,7 @@ export default function RegisterScreen({ route, navigation }: any) {
                   ? 'BIS AHC Recognition Number' 
                   : 'BIS Refinery License Number'
               }
+              placeholderTextColor="#888"
               value={bisRegistrationNumber}
               onChangeText={setBisRegistrationNumber}
               autoCapitalize="characters"
@@ -407,6 +414,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 15,
     fontSize: 16,
+    color: '#333',
   },
   disabledInput: {
     backgroundColor: '#f5f5f5',

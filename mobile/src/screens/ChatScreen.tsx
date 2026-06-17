@@ -797,6 +797,7 @@ export default function ChatScreen({ navigation }: any) {
               <TextInput
                 style={styles.input}
                 placeholder="Ask a question..."
+                placeholderTextColor="#888"
                 value={inputText}
                 onChangeText={setInputText}
                 multiline
