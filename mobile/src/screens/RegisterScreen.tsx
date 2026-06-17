@@ -213,6 +213,7 @@ export default function RegisterScreen({ route, navigation }: any) {
           </View>
         )}
 
+        <Text style={styles.inputLabel}>Full Name</Text>
         <TextInput
           style={styles.input}
           placeholder="Full Name"
@@ -221,9 +222,10 @@ export default function RegisterScreen({ route, navigation }: any) {
           onChangeText={setName}
         />
         
+        <Text style={styles.inputLabel}>Email Address</Text>
         <TextInput
           style={[styles.input, isInviteVerified && styles.disabledInput]}
-          placeholder="Email"
+          placeholder="Email Address"
           placeholderTextColor="#888"
           value={email}
           onChangeText={setEmail}
@@ -232,6 +234,7 @@ export default function RegisterScreen({ route, navigation }: any) {
           editable={!isInviteVerified}
         />
         
+        <Text style={styles.inputLabel}>Password</Text>
         <TextInput
           style={styles.input}
           placeholder="Password"
@@ -241,6 +244,7 @@ export default function RegisterScreen({ route, navigation }: any) {
           secureTextEntry
         />
 
+        <Text style={styles.inputLabel}>Mobile Number</Text>
         <TextInput
           style={styles.input}
           placeholder="Mobile Number"
@@ -250,6 +254,17 @@ export default function RegisterScreen({ route, navigation }: any) {
           keyboardType="phone-pad"
         />
 
+        <Text style={styles.inputLabel}>Company Name</Text>
+        <TextInput
+          style={[styles.input, isInviteVerified && styles.disabledInput]}
+          placeholder="Company Name"
+          placeholderTextColor="#888"
+          value={companyName}
+          onChangeText={setCompanyName}
+          editable={!isInviteVerified}
+        />
+
+        <Text style={styles.inputLabel}>Designation</Text>
         <TextInput
           style={styles.input}
           placeholder="Designation"
@@ -258,6 +273,7 @@ export default function RegisterScreen({ route, navigation }: any) {
           onChangeText={setDesignation}
         />
         
+        <Text style={styles.inputLabel}>Age</Text>
         <TextInput
           style={styles.input}
           placeholder="Age"
@@ -364,6 +380,13 @@ export default function RegisterScreen({ route, navigation }: any) {
             )}
 
             {/* BIS Registration / License Number */}
+            <Text style={styles.inputLabel}>
+              {role === 'jeweler' 
+                ? 'BIS Jeweler Registration Number' 
+                : role === 'hallmarking_centre' 
+                ? 'BIS AHC Recognition Number' 
+                : 'BIS Refinery License Number'}
+            </Text>
             <TextInput
               style={styles.input}
               placeholder={
@@ -420,6 +443,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
     color: '#666',
     borderColor: '#eee',
+  },
+  inputLabel: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#444',
+    marginBottom: 6,
+    marginTop: 5,
   },
   label: {
     fontSize: 16,

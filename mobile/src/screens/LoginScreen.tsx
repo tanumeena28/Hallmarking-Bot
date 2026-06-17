@@ -66,6 +66,7 @@ export default function LoginScreen({ navigation }: any) {
       <View style={styles.container}>
         <Text style={styles.title}>Welcome Back</Text>
         
+        <Text style={styles.inputLabel}>Email Address</Text>
         <TextInput
           style={styles.input}
           placeholder="Email"
@@ -76,6 +77,7 @@ export default function LoginScreen({ navigation }: any) {
           autoCapitalize="none"
         />
         
+        <Text style={styles.inputLabel}>Password</Text>
         <TextInput
           style={styles.input}
           placeholder="Password"
@@ -110,6 +112,13 @@ const styles = StyleSheet.create({
     color: '#003087',
     marginBottom: 20,
     textAlign: 'center',
+  },
+  inputLabel: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#444',
+    marginBottom: 6,
+    marginTop: 5,
   },
   input: {
     borderWidth: 1,
