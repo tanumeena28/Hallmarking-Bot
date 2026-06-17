@@ -27,6 +27,9 @@ services:
       - ./data:/data
     depends_on:
       - db
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
     restart: always
 
   management-ui:
@@ -37,6 +40,9 @@ services:
 
   caddy:
     image: caddy:2-alpine
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
     restart: always
     ports:
       - "80:80"
