@@ -1126,7 +1126,18 @@ def delete_knowledge_file(filename: str, current_user: User = Depends(require_pe
 
 @app.get("/admin/leads")
 def get_leads(db: Session = Depends(get_db)):
-    return db.query(Lead).all()
+    leads = db.query(Lead).all()
+    result = []
+    for lead in leads:
+        result.append({
+            "id": lead.id,
+            "name": lead.user.name if lead.user else "Unknown",
+            "company": lead.user.company if lead.user else "N/A",
+            "interest_type": lead.interest_type,
+            "captured_at": lead.captured_at,
+            "status": lead.status
+        })
+    return result
 
 @app.patch("/admin/leads/{lead_id}")
 def update_lead_status(lead_id: int, status_update: dict, db: Session = Depends(get_db)):
