@@ -250,6 +250,7 @@
   background: white;
   width: 90%;
   max-width: 850px;
+  max-height: 90vh;
   border-radius: 24px;
   padding: 2.5rem;
   position: relative;
@@ -257,7 +258,9 @@
   animation: slideUp 0.3s ease-out;
   display: grid;
   grid-template-columns: 1fr 1.2fr;
-  gap: 2rem;
+  grid-template-rows: auto 1fr;
+  gap: 1.5rem 2rem;
+  overflow: hidden;
 }
 
 .close-modal {
@@ -361,14 +364,16 @@
 .modal-left-column {
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
+  padding-right: 0.5rem;
 }
 
 .modal-right-column {
   border-left: 1px solid #e2e8f0;
   padding-left: 2rem;
-  max-height: 480px;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .chat-history-title {
