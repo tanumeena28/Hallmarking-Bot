@@ -187,10 +187,12 @@ Only output the corrected query, nothing else."""
         chitchat_prompt = f"""You are the Hallmarking Bot, a friendly AI assistant for Indian gold hallmarking.
 Analyze the user message: "{query}"
 
-If this message is a general greeting, farewell, expression of gratitude, or casual small talk (such as "hi", "hello", "bye", "tata", "thank you", "thanks", "kaise ho", "good morning"), respond directly and politely in the same language and script (e.g. reply in Hinglish if the query is Hinglish, Hindi script for Hindi, Gujarati script for Gujarati). Keep it short.
+We must separate casual greetings from domain questions:
+- A casual greeting is very short (1-3 words) and contains ONLY words like "hello", "hi", "hey", "kaise ho", "kem cho", "tata", "bye", "thanks", "thank you", "good morning".
+- Any message that asks a question, contains informational terms, or is longer than 3 words (even if written in Romanized Indian languages like Hinglish, Gujlish, Telglish, e.g., using words like "maate", "joiye", "che", "hai", "kya", "entha", "yela", "undhi") MUST be processed.
 
-CRITICAL: If the message asks about hallmarking, standards ("IS" or "IS number"), centers, gold rates, registration, testing, or any technical question (even if written in Romanized scripts like Hinglish or Gujarati/Gujlish, e.g. containing words like "maate", "joiye", "kaya", "kya kya", "hova", "centre", "IS"), you MUST output exactly: "PROCESS_QUERY"
-Do NOT treat informational queries or requests for introduction/explanation as casual greetings.
+If the user message is strictly a casual greeting or expression of gratitude, respond directly and politely in the same language and script (e.g. reply in Hinglish if the query is Hinglish, Hindi script for Hindi, Gujarati script for Gujarati). Keep it short.
+Otherwise, you MUST output exactly: "PROCESS_QUERY"
 
 Your response:"""
         
