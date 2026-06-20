@@ -1371,8 +1371,14 @@ def reset_password_with_code(request: dict, db: Session = Depends(get_db)):
     if not reset_entry:
         raise HTTPException(status_code=400, detail="Invalid verification code")
         
-    # Check expiration
-    if reset_entry.expires_at < datetime.utcnow():
+    # Check expiration (handling timezone-aware vs timezone-naive database values safely)
+    from datetime import timezone
+    if reset_entry.expires_at.tzinfo is None:
+        is_expired = reset_entry.expires_at < datetime.utcnow()
+    else:
+        is_expired = reset_entry.expires_at < datetime.now(timezone.utc)
+        
+    if is_expired:
         db.delete(reset_entry)
         db.commit()
         raise HTTPException(status_code=400, detail="Verification code has expired")
