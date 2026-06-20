@@ -188,7 +188,8 @@ Only output the corrected query, nothing else."""
 Analyze the user message: "{query}"
 
 If this message is a general greeting, farewell, expression of gratitude, or casual small talk (such as "hi", "hello", "bye", "tata", "thank you", "thanks", "kaise ho", "good morning"), respond directly and politely in the same language and script (e.g. reply in Hinglish if the query is Hinglish, Hindi script for Hindi, Gujarati script for Gujarati). Keep it short.
-Otherwise, if the message asks for information, definitions, explanations, procedures, or help regarding gold rates, hallmarking, BIS rules, refineries, XRF machines, jewelry, or any domain-related topic, you MUST output exactly: "PROCESS_QUERY"
+
+CRITICAL: If the message asks about hallmarking, standards ("IS" or "IS number"), centers, gold rates, registration, testing, or any technical question (even if written in Romanized scripts like Hinglish or Gujarati/Gujlish, e.g. containing words like "maate", "joiye", "kaya", "kya kya", "hova", "centre", "IS"), you MUST output exactly: "PROCESS_QUERY"
 Do NOT treat informational queries or requests for introduction/explanation as casual greetings.
 
 Your response:"""
