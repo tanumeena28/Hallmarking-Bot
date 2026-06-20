@@ -205,9 +205,12 @@ Your response:"""
                 temperature=0.7
             )
             chitchat_reply = res.choices[0].message.content.strip()
+            if "PROCESS_QUERY" in chitchat_reply or "process_query" in chitchat_reply.lower():
+                chitchat_reply = "PROCESS_QUERY"
+
             if chitchat_reply != "PROCESS_QUERY" and len(chitchat_reply) > 0:
                 # Remove quotes if LLM added them
-                if chitchat_reply.startswith('"') and chitchat_reply.endswith('"'):
+                if (chitchat_reply.startswith('"') and chitchat_reply.endswith('"')) or (chitchat_reply.startswith("'") and chitchat_reply.endswith("'")):
                     chitchat_reply = chitchat_reply[1:-1]
                 end_time = time.time()
                 return {
