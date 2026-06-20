@@ -87,6 +87,13 @@ export default function LoginScreen({ navigation }: any) {
           secureTextEntry
         />
 
+        <TouchableOpacity 
+          style={styles.forgotPasswordContainer} 
+          onPress={() => navigation.navigate('ForgotPassword')}
+        >
+          <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+        </TouchableOpacity>
+
         <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
           {loading ? (
             <ActivityIndicator color="#fff" />
@@ -140,5 +147,15 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  forgotPasswordContainer: {
+    alignSelf: 'flex-end',
+    marginBottom: 15,
+    marginTop: -5,
+  },
+  forgotPasswordText: {
+    color: '#003087',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });

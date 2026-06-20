@@ -21,7 +21,7 @@ import time
 
 # Local imports
 from database import engine, Base, get_db
-from models import User, QueryLog, Lead, Conversation, Message, GoldRate
+from models import User, QueryLog, Lead, Conversation, Message, GoldRate, PasswordReset
 from auth import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
     verify_password,
@@ -1317,3 +1317,73 @@ def create_initial_admin(db: Session = Depends(get_db)):
     db.add(admin_user)
     db.commit()
     return {"msg": "Initial admin user created (admin@nch.in / admin123)"}
+
+@app.post("/auth/forgot-password")
+def request_password_reset(request: dict, db: Session = Depends(get_db)):
+    import random
+    from datetime import datetime, timedelta
+    from email_service import send_reset_password_email
+    
+    email = request.get("email", "").strip().lower()
+    if not email:
+        raise HTTPException(status_code=400, detail="Email is required")
+    
+    # Check if user exists
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        # Security measure: don't reveal if user exists, just return success msg
+        return {"msg": "If this email is registered, a reset code has been sent."}
+    
+    # Generate 6-digit code
+    code = f"{random.randint(100000, 999999)}"
+    expires_at = datetime.utcnow() + timedelta(minutes=10)
+    
+    # Remove any existing reset codes for this email
+    db.query(PasswordReset).filter(PasswordReset.email == email).delete()
+    
+    # Save code to database
+    reset_entry = PasswordReset(email=email, code=code, expires_at=expires_at)
+    db.add(reset_entry)
+    db.commit()
+    
+    # Send email
+    send_reset_password_email(email, code)
+    
+    return {"msg": "If this email is registered, a reset code has been sent."}
+
+@app.post("/auth/reset-password")
+def reset_password_with_code(request: dict, db: Session = Depends(get_db)):
+    from datetime import datetime
+    
+    email = request.get("email", "").strip().lower()
+    code = request.get("code", "").strip()
+    new_password = request.get("new_password", "").strip()
+    
+    if not email or not code or not new_password:
+        raise HTTPException(status_code=400, detail="Email, code, and new password are required")
+        
+    # Find active reset code
+    reset_entry = db.query(PasswordReset).filter(
+        PasswordReset.email == email,
+        PasswordReset.code == code
+    ).first()
+    
+    if not reset_entry:
+        raise HTTPException(status_code=400, detail="Invalid verification code")
+        
+    # Check expiration
+    if reset_entry.expires_at < datetime.utcnow():
+        db.delete(reset_entry)
+        db.commit()
+        raise HTTPException(status_code=400, detail="Verification code has expired")
+        
+    # Find user and update password
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    user.hashed_password = get_password_hash(new_password)
+    db.delete(reset_entry) # Clear reset code
+    db.commit()
+    
+    return {"msg": "Password updated successfully"}

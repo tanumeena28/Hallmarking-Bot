@@ -85,3 +85,72 @@ def send_invitation_email(to_email: str, invite_code: str, inviter_name: str, co
     except Exception as e:
         print(f"[EmailService] Failed to send email to {to_email}: {e}")
         return False
+
+def send_reset_password_email(to_email: str, code: str):
+    smtp_host = os.getenv("SMTP_HOST", "")
+    smtp_port = int(os.getenv("SMTP_PORT", "587"))
+    smtp_username = os.getenv("SMTP_USERNAME", "")
+    smtp_password = os.getenv("SMTP_PASSWORD", "")
+    from_email = os.getenv("SMTP_FROM_EMAIL", "no-reply@nch-hallmarkbot.in")
+    from_name = os.getenv("SMTP_FROM_NAME", "Hallmarking Bot")
+
+    subject = "Password Reset Code - Hallmarking Bot"
+    
+    body = f"""
+    <html>
+      <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #334155; margin: 0; padding: 0; background-color: #f8fafc;">
+        <div style="max-width: 550px; margin: 40px auto; padding: 32px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+          
+          <p style="font-size: 16px; margin-bottom: 20px;">Hello,</p>
+          
+          <p style="font-size: 16px; color: #1e293b; margin-bottom: 28px; line-height: 1.5;">
+            We received a request to reset the password for your <strong>Hallmarking Bot</strong> account.
+          </p>
+          
+          <p style="font-size: 16px; color: #1e293b; margin-bottom: 20px;">
+            Please use the following 6-digit verification code to update your password. This code is valid for 10 minutes:
+          </p>
+          
+          <div style="padding: 20px; background-color: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; text-align: center; margin: 28px 0;">
+            <span style="font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 8px;">Verification Code</span>
+            <span style="font-size: 28px; font-weight: bold; letter-spacing: 3px; color: #003087; font-family: monospace;">{code}</span>
+          </div>
+
+          <p style="font-size: 14px; color: #64748b;">
+            If you did not request this, you can safely ignore this email. Your password will remain unchanged.
+          </p>
+          
+        </div>
+      </body>
+    </html>
+    """
+
+    print("\n" + "="*50)
+    print("SENDING EMAIL PASSWORD RESET:")
+    print(f"TO: {to_email}")
+    print(f"CODE: {code}")
+    print("="*50 + "\n")
+
+    if not smtp_host or not smtp_username or not smtp_password:
+        print("[EmailService] SMTP credentials not fully configured in .env. Skipping actual SMTP send (running in simulation/print mode).")
+        return True
+
+    try:
+        msg = MIMEMultipart("alternative")
+        msg["Subject"] = subject
+        msg["From"] = f"{from_name} <{from_email}>"
+        msg["To"] = to_email
+
+        part = MIMEText(body, "html")
+        msg.attach(part)
+
+        server = smtplib.SMTP(smtp_host, smtp_port)
+        server.starttls()
+        server.login(smtp_username, smtp_password)
+        server.sendmail(from_email, to_email, msg.as_string())
+        server.close()
+        print(f"[EmailService] Password reset email successfully sent to {to_email}!")
+        return True
+    except Exception as e:
+        print(f"[EmailService] Failed to send password reset email to {to_email}: {e}")
+        return False

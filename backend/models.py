@@ -121,3 +121,11 @@ class Invitation(Base):
     accepted_at = Column(DateTime(timezone=True), nullable=True)
 
     inviter = relationship("User", foreign_keys=[inviter_id])
+
+class PasswordReset(Base):
+    __tablename__ = "password_resets"
+
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String, index=True, nullable=False)
+    code = Column(String(6), nullable=False)
+    expires_at = Column(DateTime(timezone=True), nullable=False)
