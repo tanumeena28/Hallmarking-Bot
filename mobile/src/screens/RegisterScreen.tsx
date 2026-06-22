@@ -138,10 +138,6 @@ export default function RegisterScreen({ route, navigation }: any) {
         Alert.alert('Reminder', 'Designation is compulsory to fill!');
         return;
       }
-      if (!bisRegistrationNumber.trim()) {
-        Alert.alert('Reminder', 'BIS Registration Number is compulsory to fill!');
-        return;
-      }
     }
 
     setLoading(true);

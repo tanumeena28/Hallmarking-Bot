@@ -125,12 +125,23 @@ export default function ChatScreen({ navigation }: any) {
 
       if (response.ok) {
         const u = await response.json();
+        
+        // Calculate days since registration for grace period (3 days)
+        let isBisRequired = true;
+        if (u.created_at) {
+          const registeredAt = new Date(u.created_at);
+          const now = new Date();
+          const diffTime = Math.abs(now.getTime() - registeredAt.getTime());
+          const diffDays = diffTime / (1000 * 60 * 60 * 24);
+          isBisRequired = diffDays > 3; // Required only after 3 days
+        }
+
         // Required fields: phone, company, designation, age, bis_registration_number (except for nch_admin)
         const isMissing = !u.phone?.trim() || 
                           !u.company?.trim() || 
                           !u.designation?.trim() || 
                           !u.age || 
-                          (u.role !== 'nch_admin' && !u.bis_registration_number?.trim());
+                          (u.role !== 'nch_admin' && isBisRequired && !u.bis_registration_number?.trim());
         
         setIsProfileIncomplete(isMissing);
       }

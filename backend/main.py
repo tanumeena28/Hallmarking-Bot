@@ -15,7 +15,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 import time
 
@@ -80,6 +80,7 @@ class UserResponse(BaseModel):
     age: Optional[int] = None
     gender: Optional[str] = None
     is_certified: Optional[str] = None
+    created_at: Optional[datetime] = None
 
 class ChatRequest(BaseModel):
     message: str
@@ -190,11 +191,8 @@ def register_user(request: RegisterRequest, db: Session = Depends(get_db)):
                 detail="This role cannot be self-registered. Contact admin."
             )
 
-        if not request.bis_registration_number or not request.bis_registration_number.strip():
-            raise HTTPException(status_code=400, detail="BIS Registration Number is compulsory")
-            
         inviter_company = request.company_name
-        inviter_bis = request.bis_registration_number
+        inviter_bis = request.bis_registration_number.strip() if request.bis_registration_number else None
         inviter_role = request.role.value
         inviter_company_type = request.role.value
         inviter_is_certified = request.is_certified
