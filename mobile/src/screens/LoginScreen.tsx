@@ -101,6 +101,13 @@ export default function LoginScreen({ navigation }: any) {
             <Text style={styles.buttonText}>Login</Text>
           )}
         </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={styles.registerLinkContainer} 
+          onPress={() => navigation.navigate('Register')}
+        >
+          <Text style={styles.registerLinkText}>Don't have an account? Register</Text>
+        </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
   );
@@ -154,6 +161,15 @@ const styles = StyleSheet.create({
     marginTop: -5,
   },
   forgotPasswordText: {
+    color: '#003087',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  registerLinkContainer: {
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  registerLinkText: {
     color: '#003087',
     fontSize: 14,
     fontWeight: '600',
