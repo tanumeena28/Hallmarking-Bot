@@ -107,7 +107,7 @@ Only output the corrected query, nothing else."""
             print(f"Error refining fuzzy transcript: {e}")
             return transcript
 
-    def generate_response(self, query: str, user=None, db=None) -> dict:
+    def generate_response(self, query: str, user=None, db=None, conversation_id: int = None) -> dict:
         if not self.is_ready or self.vectorstore is None:
             return {
                 "answer": "Error: RAG index not found. Please run ingestion first.",
@@ -119,6 +119,45 @@ Only output the corrected query, nothing else."""
 
         import time
         start_time = time.time()
+
+        # Fetch conversation history if conversation_id is provided
+        history_text = ""
+        rewritten_query = query
+        
+        if conversation_id and db:
+            try:
+                from models import Message
+                # Fetch the last 6 messages of this conversation
+                past_messages = db.query(Message).filter(Message.conversation_id == conversation_id).order_by(Message.id.asc()).all()
+                if past_messages:
+                    history_text = "\n".join([f"{'User' if m.role == 'user' else 'Bot'}: {m.content}" for m in past_messages])
+                    
+                    # Call LLM to rewrite the query contextually if it is a follow-up or dependent instruction
+                    rewrite_prompt = f"""Given the following conversation history and a follow-up user message, rephrase the follow-up message into a standalone question in the same language. 
+If the follow-up message is already a standalone question or if it is a direct translation instruction (e.g. "translate this to X", "answer in X", "gujarati me"), keep it exactly as is.
+Only output the rephrased message, nothing else.
+
+Chat History:
+{history_text}
+
+Follow-up User Message: {query}
+Standalone Message:"""
+                    
+                    client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+                    res = client.chat.completions.create(
+                        model="llama-3.3-70b-versatile",
+                        messages=[{"role": "user", "content": rewrite_prompt}],
+                        max_tokens=150,
+                        temperature=0.1
+                    )
+                    rewritten_content = res.choices[0].message.content.strip()
+                    if rewritten_content:
+                        if rewritten_content.startswith('"') and rewritten_content.endswith('"'):
+                            rewritten_content = rewritten_content[1:-1]
+                        print(f"DEBUG - Conversational Rewriter: '{query}' -> '{rewritten_content}'")
+                        rewritten_query = rewritten_content
+            except Exception as he:
+                print(f"Error fetching chat history or rewriting query: {he}")
 
         # 0. Check Auto-Correction Cache First
         if db:
@@ -230,7 +269,7 @@ Your response:"""
 User message may be in English, Hindi, Hinglish, Gujarati, Telugu, or any other Indian language (either in native script or Roman letters).
 Do not add any explanation or preamble. Only output the English translation.
 
-User message: "{query}"
+User message: "{rewritten_query}"
 English translation:"""
             client = Groq(api_key=os.getenv("GROQ_API_KEY"))
             res = client.chat.completions.create(
@@ -243,16 +282,16 @@ English translation:"""
             # Clean quotes if any
             if search_query.startswith('"') and search_query.endswith('"'):
                 search_query = search_query[1:-1]
-            print(f"DEBUG - LLM Translation: '{query}' -> '{search_query}'")
+            print(f"DEBUG - LLM Translation: '{rewritten_query}' -> '{search_query}'")
         except Exception as e:
             print(f"Error in LLM translation: {e}")
             from deep_translator import GoogleTranslator
             try:
-                search_query = GoogleTranslator(source='auto', target='en').translate(query)
-                print(f"DEBUG - Google Translation fallback: '{query}' -> '{search_query}'")
+                search_query = GoogleTranslator(source='auto', target='en').translate(rewritten_query)
+                print(f"DEBUG - Google Translation fallback: '{rewritten_query}' -> '{search_query}'")
             except Exception as te:
                 print(f"Translation fallback error: {te}")
-                search_query = query
+                search_query = rewritten_query
 
         # 1. Classify Intent on the translated English query for high accuracy
         intent = self.classify_intent(search_query)
@@ -286,6 +325,10 @@ Source: {latest_rate.source}
         # 4. Build System Prompt
         user_context = get_user_context_prompt(user)
         
+        history_section = ""
+        if history_text:
+            history_section = f"\nChat History:\n{history_text}\n"
+            
         system_prompt = f"""You are the Hallmarking Bot, an expert assistant for hallmarking centres, jewelers, and gold refineries in India.
 Answer ONLY based on the provided context below.
 If the answer is not in the context, say exactly: "Please contact Admin directly for this query."
@@ -303,7 +346,7 @@ CRITICAL: Language and Script Instructions:
 Do NOT ask the user if they are satisfied with the response or append any satisfaction verification question (like "Kya aap satisfied hain?"). Simply answer the query directly and politely.
 
 {user_context}
-
+{history_section}
 Context:
 {context}
 

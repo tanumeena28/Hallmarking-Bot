@@ -151,10 +151,10 @@ Answer:"""
         # 1. Detect language (just for logging, not for translation anymore)
         lang = self.detect_language(query)
 
-        # Call RAG Pipeline directly with the original query
+        # Call RAG Pipeline directly with the original query and conversation ID for context
         from rag_pipeline import RAGPipeline
         rag = RAGPipeline()
-        rag_result = rag.generate_response(query, user=user, db=db)
+        rag_result = rag.generate_response(query, user=user, db=db, conversation_id=conversation_id)
 
         
         final_answer = rag_result["answer"]
