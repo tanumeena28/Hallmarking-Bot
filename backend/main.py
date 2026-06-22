@@ -1093,6 +1093,67 @@ async def upload_knowledge(file: UploadFile = File(...), current_user: User = De
     
     return {"msg": f"File {file.filename} uploaded and knowledge base updated."}
 
+class URLUploadRequest(BaseModel):
+    url: str
+
+@app.post("/admin/upload-url")
+async def upload_url(req: URLUploadRequest, current_user: User = Depends(require_permission(["nch_admin"]))):
+    url = req.url.strip()
+    if not (url.startswith("http://") or url.startswith("https://")):
+        raise HTTPException(status_code=400, detail="Invalid URL format. URL must start with http:// or https://")
+    
+    import requests
+    from bs4 import BeautifulSoup
+    import urllib.parse
+    import re
+    
+    try:
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        }
+        response = requests.get(url, headers=headers, timeout=15)
+        response.raise_for_status()
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Failed to fetch URL: {str(e)}")
+        
+    try:
+        soup = BeautifulSoup(response.content, "html.parser")
+        
+        # Remove navigation, headers, footers and style/script tags
+        for element in soup(["script", "style", "nav", "header", "footer", "aside", "iframe", "noscript"]):
+            element.decompose()
+            
+        title = soup.title.string.strip() if soup.title else ""
+        text = soup.get_text(separator="\n")
+        
+        # Clean white spaces
+        lines = [line.strip() for line in text.splitlines()]
+        chunks = [line for line in lines if line]
+        cleaned_text = "\n".join(chunks)
+        
+        final_content = f"Source URL: {url}\nTitle: {title}\n\n{cleaned_text}"
+        
+        # Create safe filename
+        parsed_url = urllib.parse.urlparse(url)
+        domain = parsed_url.netloc.replace("www.", "")
+        path = parsed_url.path.strip("/")
+        
+        safe_name = f"url_{domain}_{path}"
+        safe_name = re.sub(r"[^a-zA-Z0-9_\-]", "_", safe_name)
+        safe_filename = f"{safe_name[:100]}.txt"
+        
+        os.makedirs("../data/knowledge", exist_ok=True)
+        file_path = os.path.join("../data/knowledge", safe_filename)
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write(final_content)
+            
+        from data_pipeline import ingest_knowledge_base
+        ingest_knowledge_base(data_dir="../data/knowledge", chroma_dir="../data/chroma_db", clear_existing=True)
+        
+        return {"msg": f"URL {url} scraped successfully. Saved as {safe_filename} and training complete."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Web scraping or ingestion failed: {str(e)}")
+
 @app.get("/admin/knowledge-files")
 def list_knowledge_files(current_user: User = Depends(require_permission(["nch_admin"]))):
     data_dir = "../data/knowledge"

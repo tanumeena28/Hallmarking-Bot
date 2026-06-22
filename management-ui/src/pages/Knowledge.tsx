@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import API_URL from '../config';
 import './Knowledge.css';
-import { Upload, FileText, Trash2, AlertCircle, CheckCircle } from 'lucide-react';
+import { Upload, FileText, Trash2, AlertCircle, CheckCircle, Globe } from 'lucide-react';
 
 interface KnowledgeFile {
   name: string;
@@ -12,7 +12,41 @@ interface KnowledgeFile {
 export default function Knowledge() {
   const [files, setFiles] = useState<KnowledgeFile[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [crawling, setCrawling] = useState(false);
+  const [urlInput, setUrlInput] = useState('');
   const [status, setStatus] = useState<{ type: 'success' | 'error', msg: string } | null>(null);
+
+  const handleUrlSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!urlInput.trim()) return;
+
+    setCrawling(true);
+    setStatus(null);
+
+    const token = localStorage.getItem('token');
+    try {
+      const res = await fetch(`${API_URL}/admin/upload-url`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ url: urlInput.trim() })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setStatus({ type: 'success', msg: data.msg });
+        setUrlInput('');
+        fetchFiles();
+      } else {
+        setStatus({ type: 'error', msg: data.detail || 'Crawling failed' });
+      }
+    } catch (err) {
+      setStatus({ type: 'error', msg: 'Network error occurred while fetching URL.' });
+    } finally {
+      setCrawling(false);
+    }
+  };
 
   useEffect(() => {
     fetchFiles();
@@ -100,13 +134,40 @@ export default function Knowledge() {
       )}
 
       <div className="upload-section">
-        <label className={`upload-card ${uploading ? 'uploading' : ''}`}>
-          <input type="file" onChange={handleFileUpload} disabled={uploading} accept=".pdf,.csv,.txt" />
-          <Upload size={40} />
-          <h3>{uploading ? 'Processing & Training...' : 'Click to Upload Document'}</h3>
-          <p>Support PDF, CSV and Text files (Max 10MB)</p>
-          {uploading && <div className="progress-bar-ind"></div>}
-        </label>
+        <div className="upload-row">
+          <label className={`upload-card ${uploading ? 'uploading' : ''}`}>
+            <input type="file" onChange={handleFileUpload} disabled={uploading || crawling} accept=".pdf,.csv,.txt" />
+            <Upload size={40} />
+            <h3>{uploading ? 'Processing & Training...' : 'Click to Upload Document'}</h3>
+            <p>Support PDF, CSV and Text files (Max 10MB)</p>
+            {uploading && <div className="progress-bar-ind"></div>}
+          </label>
+
+          <div className={`url-card ${crawling ? 'crawling' : ''}`}>
+            <Globe size={40} />
+            <h3>Ingest Website URL</h3>
+            <p>Scrape, clean, and train your bot on a website page's content</p>
+            <form className="url-form" onSubmit={handleUrlSubmit}>
+              <input
+                type="url"
+                className="url-input"
+                placeholder="https://example.com/page-to-scrape"
+                value={urlInput}
+                onChange={(e) => setUrlInput(e.target.value)}
+                disabled={uploading || crawling}
+                required
+              />
+              <button
+                type="submit"
+                className="url-submit-btn"
+                disabled={uploading || crawling || !urlInput.trim()}
+              >
+                {crawling ? 'Scraping...' : 'Fetch & Train'}
+              </button>
+            </form>
+            {crawling && <div className="progress-bar-ind"></div>}
+          </div>
+        </div>
       </div>
 
       <div className="files-grid">
