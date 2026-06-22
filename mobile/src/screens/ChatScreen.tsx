@@ -60,10 +60,12 @@ export default function ChatScreen({ navigation }: any) {
   });
   
   // Sidebar Animation State
+  // Sidebar Animation State
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const slideAnim = useRef(new Animated.Value(-sidebarWidth)).current;
   const flatListRef = useRef<FlatList>(null);
   const soundRef = useRef<Audio.Sound | null>(null);
+  const hasInitialized = useRef(false);
 
   const apiUrl = Constants.expoConfig?.extra?.apiUrl;
 
@@ -141,6 +143,36 @@ export default function ChatScreen({ navigation }: any) {
   useEffect(() => {
     loadSessions();
     checkProfileCompleteness();
+
+    // Automatically start a new chat session if none is active
+    const autoStartChat = async () => {
+      try {
+        const token = await SecureStore.getItemAsync('userToken');
+        if (token && currentConversationId === null) {
+          const response = await fetch(`${apiUrl}/chat/conversations`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            setMessages([
+              { id: 'welcome', text: 'Hello! I am the Hallmarking Bot. How can I help you today?', isUser: false, timestamp: new Date() }
+            ]);
+            setCurrentConversationId(data.conversation_id);
+          }
+        }
+      } catch (err) {
+        console.error('Error auto-starting chat:', err);
+      }
+    };
+
+    if (!hasInitialized.current && currentConversationId === null) {
+      hasInitialized.current = true;
+      autoStartChat();
+    }
 
     const unsubscribe = navigation.addListener('focus', () => {
       checkProfileCompleteness();
