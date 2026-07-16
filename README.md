@@ -173,7 +173,7 @@ docker-compose -f docker-compose.prod.yml up --build -d
 
 - [ ] Expand vernacular language support to additional Indian regional languages
 - [ ] Add analytics dashboard for query trends and lead conversion tracking
-- [ ] Integrate additional payment gateway for assay booking confirmations
+- [ ] Integrate an additional payment gateway for assay booking confirmations
 
 ---
 
